@@ -1,0 +1,1285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lucky 13 &#8212; Flipping the Script</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;800;900&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&display=swap');
+
+        *, *::before, *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --gold: #D4A843;
+            --gold-light: #F0D78C;
+            --gold-glow: rgba(212, 168, 67, 0.25);
+            --deep-violet: #2D1B4E;
+            --midnight: #13111A;
+            --plum: #4A2D6B;
+            --soft-lavender: #B19CD9;
+            --teal: #5EEAD4;
+            --deep-teal: #14B8A6;
+            --warm-rose: #E8A0B4;
+            --parchment: #F5EFE0;
+            --parchment-dark: #E8DFD0;
+            --ink: #2C2A35;
+            --ink-light: #5A566B;
+            --sage: #87A878;
+            --ember: #C75B39;
+        }
+
+        body {
+            font-family: 'EB Garamond', Georgia, serif;
+            background: var(--midnight);
+            color: var(--parchment);
+            min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* ========================
+           STARFIELD BACKGROUND
+        ======================== */
+        .starfield {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 0;
+            overflow: hidden;
+        }
+
+        .star {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background: var(--gold-light);
+            border-radius: 50%;
+            animation: twinkle var(--dur) ease-in-out infinite;
+            opacity: 0;
+        }
+
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.1; }
+            50% { opacity: var(--peak, 0.8); }
+        }
+
+        .bg-sigil {
+            position: fixed;
+            width: 500px;
+            height: 500px;
+            border: 1px solid rgba(212, 168, 67, 0.04);
+            border-radius: 50%;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .bg-sigil::before {
+            content: '';
+            position: absolute;
+            inset: 40px;
+            border: 1px solid rgba(212, 168, 67, 0.06);
+            border-radius: 50%;
+        }
+
+        .bg-sigil::after {
+            content: '13';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-family: 'Cinzel', serif;
+            font-size: 8rem;
+            font-weight: 900;
+            color: rgba(212, 168, 67, 0.03);
+            letter-spacing: 0.1em;
+        }
+
+        /* ========================
+           LAYOUT
+        ======================== */
+        .container {
+            max-width: 960px;
+            margin: 0 auto;
+            padding: 2rem 1.5rem 4rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* ========================
+           NAVIGATION
+        ======================== */
+        .nav {
+            display: flex;
+            justify-content: center;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+            margin-bottom: 2.5rem;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: linear-gradient(to bottom, var(--midnight) 60%, transparent);
+            padding: 1rem 0 1.5rem;
+        }
+
+        .nav-btn {
+            font-family: 'Cinzel', serif;
+            font-size: 0.75rem;
+            font-weight: 600;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            padding: 0.6rem 1.2rem;
+            border: 1px solid rgba(212, 168, 67, 0.25);
+            border-radius: 4px;
+            background: rgba(45, 27, 78, 0.5);
+            color: var(--soft-lavender);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .nav-btn:hover {
+            border-color: var(--gold);
+            color: var(--gold-light);
+            background: rgba(45, 27, 78, 0.8);
+        }
+
+        .nav-btn.active {
+            background: linear-gradient(135deg, var(--gold) 0%, var(--ember) 100%);
+            color: var(--midnight);
+            border-color: var(--gold);
+        }
+
+        /* ========================
+           PAGES
+        ======================== */
+        .page {
+            display: none;
+            animation: pageIn 0.6s ease;
+        }
+
+        .page.active {
+            display: block;
+        }
+
+        @keyframes pageIn {
+            from { opacity: 0; transform: translateY(24px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* ========================
+           HEADER
+        ======================== */
+        .header {
+            text-align: center;
+            margin-bottom: 3rem;
+            padding-top: 1rem;
+        }
+
+        .header-numeral {
+            font-family: 'Cinzel', serif;
+            font-size: 5rem;
+            font-weight: 900;
+            background: linear-gradient(180deg, var(--gold-light) 0%, var(--gold) 50%, var(--ember) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            line-height: 1;
+            margin-bottom: 0.25rem;
+            text-shadow: none;
+            position: relative;
+            display: inline-block;
+        }
+
+        .header-numeral::before,
+        .header-numeral::after {
+            content: '&#10041;';
+            -webkit-text-fill-color: var(--gold);
+            font-size: 1.2rem;
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+
+        .header-numeral::before { left: -2rem; }
+        .header-numeral::after { right: -2rem; }
+
+        h1 {
+            font-family: 'Cinzel', serif;
+            font-size: 2.2rem;
+            font-weight: 700;
+            color: var(--parchment);
+            letter-spacing: 0.06em;
+            margin-bottom: 0.5rem;
+        }
+
+        .subtitle {
+            font-family: 'EB Garamond', serif;
+            font-style: italic;
+            font-size: 1.15rem;
+            color: var(--soft-lavender);
+            letter-spacing: 0.02em;
+        }
+
+        .divider {
+            width: 120px;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--gold), transparent);
+            margin: 1.5rem auto;
+        }
+
+        /* ========================
+           CARDS
+        ======================== */
+        .card {
+            background: linear-gradient(145deg, rgba(45, 27, 78, 0.6) 0%, rgba(19, 17, 26, 0.8) 100%);
+            border: 1px solid rgba(212, 168, 67, 0.12);
+            border-radius: 12px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            position: relative;
+            backdrop-filter: blur(8px);
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 2rem;
+            right: 2rem;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--gold), transparent);
+        }
+
+        .card h2 {
+            font-family: 'Cinzel', serif;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--gold-light);
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .card h2 .glyph {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 36px;
+            height: 36px;
+            border: 1px solid var(--gold);
+            border-radius: 6px;
+            font-size: 1rem;
+            color: var(--gold);
+            flex-shrink: 0;
+        }
+
+        .card p, .card li {
+            font-size: 1.05rem;
+            line-height: 1.75;
+            color: var(--parchment-dark);
+        }
+
+        /* ========================
+           OPENING PAGE
+        ======================== */
+        .process-banner {
+            text-align: center;
+            padding: 1.25rem 2rem;
+            background: rgba(212, 168, 67, 0.08);
+            border: 1px solid rgba(212, 168, 67, 0.15);
+            border-radius: 8px;
+            margin-bottom: 2rem;
+            font-family: 'Cinzel', serif;
+            font-size: 0.85rem;
+            letter-spacing: 0.1em;
+            color: var(--gold-light);
+        }
+
+        .process-banner span {
+            display: block;
+            margin-top: 0.4rem;
+            font-family: 'EB Garamond', serif;
+            font-style: italic;
+            font-size: 0.95rem;
+            letter-spacing: normal;
+            color: var(--soft-lavender);
+        }
+
+        .quote-block {
+            text-align: center;
+            padding: 2rem;
+            margin: 2rem 0;
+            position: relative;
+        }
+
+        .quote-block::before {
+            content: '\201C';
+            font-family: 'Cinzel', serif;
+            font-size: 4rem;
+            color: var(--gold);
+            opacity: 0.3;
+            position: absolute;
+            top: -0.5rem;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .quote-text {
+            font-family: 'EB Garamond', serif;
+            font-style: italic;
+            font-size: 1.3rem;
+            line-height: 1.7;
+            color: var(--parchment);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .quote-attr {
+            font-family: 'Cinzel', serif;
+            font-size: 0.8rem;
+            letter-spacing: 0.1em;
+            color: var(--gold);
+            margin-top: 1rem;
+        }
+
+        /* Breathing Circle */
+        .breathing-container {
+            text-align: center;
+            margin: 2.5rem 0;
+        }
+
+        .breathing-circle {
+            width: 160px;
+            height: 160px;
+            border-radius: 50%;
+            border: 2px solid var(--gold);
+            margin: 0 auto 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            position: relative;
+            transition: all 0.3s ease;
+            background: rgba(212, 168, 67, 0.05);
+        }
+
+        .breathing-circle:hover {
+            box-shadow: 0 0 30px var(--gold-glow);
+        }
+
+        .breathing-circle.active {
+            animation: breathe 8s ease-in-out infinite;
+        }
+
+        @keyframes breathe {
+            0%, 100% { transform: scale(1); border-color: var(--gold); box-shadow: 0 0 20px var(--gold-glow); }
+            25% { transform: scale(1.15); border-color: var(--gold-light); box-shadow: 0 0 40px var(--gold-glow); }
+            50% { transform: scale(1.15); border-color: var(--gold-light); box-shadow: 0 0 40px var(--gold-glow); }
+            75% { transform: scale(1); border-color: var(--gold); box-shadow: 0 0 20px var(--gold-glow); }
+        }
+
+        .breathing-text {
+            font-family: 'Cinzel', serif;
+            font-size: 0.85rem;
+            letter-spacing: 0.15em;
+            color: var(--gold);
+            text-transform: uppercase;
+        }
+
+        .breathing-instruction {
+            font-family: 'EB Garamond', serif;
+            font-style: italic;
+            color: var(--soft-lavender);
+            font-size: 1rem;
+        }
+
+        /* Meditation Script */
+        .meditation-script {
+            background: rgba(45, 27, 78, 0.4);
+            border: 1px solid rgba(212, 168, 67, 0.1);
+            border-radius: 10px;
+            padding: 2rem;
+            margin: 2rem 0;
+            display: none;
+        }
+
+        .meditation-script.show {
+            display: block;
+            animation: pageIn 0.5s ease;
+        }
+
+        .meditation-script p {
+            font-style: italic;
+            line-height: 2;
+            margin-bottom: 1rem;
+            color: var(--parchment-dark);
+        }
+
+        .meditation-toggle {
+            font-family: 'Cinzel', serif;
+            font-size: 0.8rem;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            padding: 0.6rem 1.5rem;
+            border: 1px solid var(--gold);
+            border-radius: 4px;
+            background: transparent;
+            color: var(--gold);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-block;
+            margin-top: 0.5rem;
+        }
+
+        .meditation-toggle:hover {
+            background: rgba(212, 168, 67, 0.12);
+        }
+
+        /* ========================
+           PSYCHOEDUCATION
+        ======================== */
+        .concept-card {
+            background: rgba(45, 27, 78, 0.35);
+            border: 1px solid rgba(212, 168, 67, 0.1);
+            border-radius: 10px;
+            margin-bottom: 1rem;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .concept-card:hover {
+            border-color: rgba(212, 168, 67, 0.25);
+        }
+
+        .concept-header {
+            padding: 1.25rem 1.5rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            transition: background 0.3s ease;
+        }
+
+        .concept-header:hover {
+            background: rgba(212, 168, 67, 0.06);
+        }
+
+        .concept-num {
+            font-family: 'Cinzel', serif;
+            font-weight: 800;
+            font-size: 1.1rem;
+            color: var(--gold);
+            width: 28px;
+            height: 28px;
+            border: 1px solid var(--gold);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            font-size: 0.85rem;
+        }
+
+        .concept-title {
+            font-family: 'Cinzel', serif;
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--parchment);
+            flex: 1;
+            letter-spacing: 0.03em;
+        }
+
+        .concept-toggle {
+            color: var(--gold);
+            font-size: 1.2rem;
+            transition: transform 0.3s ease;
+        }
+
+        .concept-card.open .concept-toggle {
+            transform: rotate(45deg);
+        }
+
+        .concept-body {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.4s ease;
+        }
+
+        .concept-card.open .concept-body {
+            max-height: 800px;
+        }
+
+        .concept-content {
+            padding: 0 1.5rem 1.5rem;
+            border-top: 1px solid rgba(212, 168, 67, 0.08);
+        }
+
+        .concept-content p {
+            margin-top: 1rem;
+        }
+
+        .concept-content em {
+            color: var(--gold-light);
+            font-style: italic;
+        }
+
+        /* ========================
+           STATIONS
+        ======================== */
+        .station-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.25rem;
+            margin-top: 1.5rem;
+        }
+
+        .station-card {
+            background: linear-gradient(145deg, rgba(45, 27, 78, 0.5) 0%, rgba(19, 17, 26, 0.7) 100%);
+            border: 1px solid rgba(212, 168, 67, 0.12);
+            border-radius: 10px;
+            padding: 1.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .station-card:hover {
+            border-color: var(--gold);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 30px rgba(212, 168, 67, 0.1);
+        }
+
+        .station-card.expanded {
+            grid-column: 1 / -1;
+            border-color: var(--gold);
+        }
+
+        .station-symbol {
+            font-family: 'Cinzel', serif;
+            font-size: 1.8rem;
+            color: var(--gold);
+            margin-bottom: 0.5rem;
+            display: block;
+        }
+
+        .station-name {
+            font-family: 'Cinzel', serif;
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--parchment);
+            letter-spacing: 0.05em;
+            margin-bottom: 0.25rem;
+        }
+
+        .station-subtitle {
+            font-family: 'EB Garamond', serif;
+            font-style: italic;
+            color: var(--soft-lavender);
+            font-size: 0.95rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .station-prompts {
+            display: none;
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid rgba(212, 168, 67, 0.1);
+        }
+
+        .station-card.expanded .station-prompts {
+            display: block;
+            animation: pageIn 0.3s ease;
+        }
+
+        .prompt-item {
+            padding: 0.75rem 0;
+            border-bottom: 1px solid rgba(212, 168, 67, 0.05);
+            font-size: 1rem;
+            line-height: 1.65;
+            color: var(--parchment-dark);
+        }
+
+        .prompt-item:last-child {
+            border-bottom: none;
+        }
+
+        .prompt-item strong {
+            color: var(--gold-light);
+        }
+
+        .pass-note {
+            text-align: center;
+            padding: 1rem;
+            margin-top: 1.5rem;
+            font-style: italic;
+            color: var(--soft-lavender);
+            font-size: 0.95rem;
+            border: 1px dashed rgba(177, 156, 217, 0.2);
+            border-radius: 8px;
+        }
+
+        /* ========================
+           INTEGRATION / CLOSING
+        ======================== */
+        .reflection-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1rem;
+            margin: 1.5rem 0;
+        }
+
+        .reflection-prompt {
+            background: rgba(45, 27, 78, 0.3);
+            border: 1px solid rgba(212, 168, 67, 0.08);
+            border-radius: 8px;
+            padding: 1.25rem;
+        }
+
+        .reflection-prompt label {
+            display: block;
+            font-family: 'Cinzel', serif;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--gold-light);
+            letter-spacing: 0.05em;
+            margin-bottom: 0.5rem;
+        }
+
+        .reflection-prompt textarea {
+            width: 100%;
+            min-height: 80px;
+            padding: 0.75rem;
+            border: 1px solid rgba(212, 168, 67, 0.15);
+            border-radius: 6px;
+            background: rgba(19, 17, 26, 0.6);
+            color: var(--parchment);
+            font-family: 'EB Garamond', serif;
+            font-size: 1rem;
+            line-height: 1.6;
+            resize: vertical;
+            transition: all 0.3s ease;
+        }
+
+        .reflection-prompt textarea:focus {
+            outline: none;
+            border-color: var(--gold);
+            box-shadow: 0 0 0 2px var(--gold-glow);
+        }
+
+        .reflection-prompt textarea::placeholder {
+            color: var(--ink-light);
+            font-style: italic;
+        }
+
+        .btn-row {
+            display: flex;
+            gap: 0.75rem;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-top: 1.5rem;
+        }
+
+        .btn {
+            font-family: 'Cinzel', serif;
+            font-size: 0.8rem;
+            font-weight: 600;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            padding: 0.75rem 2rem;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 1px solid var(--gold);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--gold) 0%, var(--ember) 100%);
+            color: var(--midnight);
+            border-color: var(--gold);
+        }
+
+        .btn-primary:hover {
+            box-shadow: 0 4px 20px var(--gold-glow);
+            transform: translateY(-2px);
+        }
+
+        .btn-ghost {
+            background: transparent;
+            color: var(--gold);
+        }
+
+        .btn-ghost:hover {
+            background: rgba(212, 168, 67, 0.1);
+        }
+
+        /* 13 Reclamation Items */
+        .reclamation-list {
+            list-style: none;
+            margin: 1.5rem 0;
+            counter-reset: reclaim;
+        }
+
+        .reclamation-list li {
+            counter-increment: reclaim;
+            padding: 0.75rem 0 0.75rem 2.5rem;
+            position: relative;
+            border-bottom: 1px solid rgba(212, 168, 67, 0.06);
+        }
+
+        .reclamation-list li::before {
+            content: counter(reclaim);
+            position: absolute;
+            left: 0;
+            top: 0.75rem;
+            font-family: 'Cinzel', serif;
+            font-weight: 800;
+            font-size: 0.85rem;
+            color: var(--gold);
+            width: 24px;
+            height: 24px;
+            border: 1px solid rgba(212, 168, 67, 0.3);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* ========================
+           RESPONSIVE
+        ======================== */
+        @media (max-width: 768px) {
+            .container { padding: 1rem 1rem 3rem; }
+            .header-numeral { font-size: 3.5rem; }
+            h1 { font-size: 1.6rem; }
+            .card { padding: 1.5rem; }
+            .station-grid { grid-template-columns: 1fr; }
+            .nav { gap: 0.35rem; }
+            .nav-btn { padding: 0.5rem 0.8rem; font-size: 0.65rem; }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+
+        /* ========================
+           CRISIS FOOTER
+        ======================== */
+        .crisis-footer {
+            text-align: center;
+            padding: 2rem 1.5rem;
+            margin-top: 3rem;
+            border-top: 1px solid rgba(212, 168, 67, 0.08);
+            font-size: 0.9rem;
+            color: var(--ink-light);
+        }
+
+        .crisis-footer a {
+            color: var(--gold);
+            text-decoration: none;
+        }
+
+        .crisis-footer a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+
+<!-- Background -->
+<div class="starfield" id="starfield"></div>
+<div class="bg-sigil"></div>
+
+<div class="container">
+
+    <!-- Header -->
+    <div class="header">
+        <div class="header-numeral">13</div>
+        <h1>Lucky 13</h1>
+        <p class="subtitle">Flipping the Script &#8212; An Expressive Arts Reclamation</p>
+        <div class="divider"></div>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="nav" role="navigation" aria-label="Section navigation">
+        <button class="nav-btn active" onclick="showPage(0)" aria-label="Opening">I. Opening</button>
+        <button class="nav-btn" onclick="showPage(1)" aria-label="Psychoeducation">II. The Lore</button>
+        <button class="nav-btn" onclick="showPage(2)" aria-label="Stations">III. Stations</button>
+        <button class="nav-btn" onclick="showPage(3)" aria-label="Integration">IV. Integration</button>
+    </nav>
+
+    <!-- ========================
+         PAGE 0: OPENING
+    ======================== -->
+    <div class="page active" id="page-0">
+
+        <div class="process-banner">
+            PROCESS OVER PRODUCT &#8226; CURIOSITY OVER PERFECTION
+            <span>There is no wrong way to do this. You may always pass.</span>
+        </div>
+
+        <div class="card">
+            <h2><span class="glyph">&#10038;</span> Opening Meditation</h2>
+
+            <div class="quote-block">
+                <p class="quote-text">
+                    What has been cast out always carries a secret power.<br>
+                    To reclaim it is not rebellion &#8212; it is remembering.
+                </p>
+                <p class="quote-attr">&#8212; Clarissa Pinkol&eacute;s Est&eacute;s</p>
+            </div>
+
+            <div class="breathing-container">
+                <div class="breathing-circle" id="breathCircle" onclick="toggleBreathing()" role="button" aria-label="Start breathing exercise" tabindex="0">
+                    <span class="breathing-text" id="breathText">BEGIN</span>
+                </div>
+                <p class="breathing-instruction" id="breathInstruction">Tap the circle to begin a grounding breath</p>
+            </div>
+
+            <button class="meditation-toggle" onclick="toggleMeditation()">
+                &#9672; Guided Meditation Script
+            </button>
+
+            <div class="meditation-script" id="meditationScript">
+                <p>Find a position that feels comfortable. Let your body settle. If it feels safe, allow your eyes to close or soften your gaze downward.</p>
+
+                <p>Take a slow breath in through the nose&#8230; and a long exhale through the mouth. One more. Let the exhale be audible if that feels right.</p>
+
+                <p>Today is Friday the thirteenth. A day the world has agreed to call unlucky. Cursed. Dangerous. But consider this: the number thirteen was sacred long before it was feared. Thirteen moons in a year. Thirteen weeks in each season. Thirteen &#8212; the number of transformation, of cycles completing, of something new beginning.</p>
+
+                <p>And Friday &#8212; named for Freya, Norse goddess of love, beauty, and fierce protection. A day that once belonged to the feminine, to pleasure, to power. It was made unlucky by those who feared that power.</p>
+
+                <p>So today, we ask: What in your life has been called unlucky, broken, too much, or not enough &#8212; that might actually carry a secret strength? What part of you was cast out that deserves to come home?</p>
+
+                <p>Perhaps it is your sensitivity. Your intensity. Your need for rest. Your body. Your appetite. Your grief. Your strangeness. Your particular way of being alive.</p>
+
+                <p>Today we flip the script. We take the cursed and call it blessed. We take the rejected and crown it. We take the number thirteen and make it our lucky number.</p>
+
+                <p>When you are ready, let your eyes gently open. We begin.</p>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2><span class="glyph">&#9788;</span> Today's Invitation</h2>
+            <p>We live inside stories that other people wrote about us. Stories about what makes us broken, what makes us unlucky, what we should fear or hide. Today, we pick up the pen. We rewrite the superstition. We flip the curse into a blessing and discover that what was cast out was powerful all along.</p>
+            <div style="margin-top:1.5rem;">
+                <p><strong style="color:var(--gold-light);">The Therapeutic Frame:</strong> This group draws on <em>narrative therapy</em> (reauthoring dominant stories), <em>IFS</em> (welcoming exiled parts home), and <em>post-traumatic growth</em> (meaning-making after adversity). When we reclaim what was labeled &#8220;cursed,&#8221; we reclaim agency over our own story.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========================
+         PAGE 1: PSYCHOEDUCATION
+    ======================== -->
+    <div class="page" id="page-1">
+        <div class="card">
+            <h2><span class="glyph">&#9733;</span> The Lore of the &#8220;Unlucky&#8221;</h2>
+            <p style="margin-bottom:1.5rem;">Every superstition holds a hidden history. What we call &#8220;cursed&#8221; was often sacred first. Tap each card to explore.</p>
+
+            <div class="concept-card" onclick="toggleConcept(this)">
+                <div class="concept-header">
+                    <span class="concept-num">1</span>
+                    <span class="concept-title">The Number 13 Was Sacred</span>
+                    <span class="concept-toggle">+</span>
+                </div>
+                <div class="concept-body">
+                    <div class="concept-content">
+                        <p>Thirteen lunar cycles make a year. There are thirteen weeks in each season. In many pre-Christian traditions, thirteen represented completion and transformation &#8212; the moment when a full cycle ends and something new begins.</p>
+                        <p><em>The therapeutic mirror:</em> What in your life feels like it&#8217;s completing a cycle? What transformation have others called &#8220;too much&#8221; or &#8220;too disruptive&#8221; that might actually be the natural rhythm of your becoming?</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="concept-card" onclick="toggleConcept(this)">
+                <div class="concept-header">
+                    <span class="concept-num">2</span>
+                    <span class="concept-title">Friday Belonged to Freya</span>
+                    <span class="concept-toggle">+</span>
+                </div>
+                <div class="concept-body">
+                    <div class="concept-content">
+                        <p>Friday is named for Freya (Norse) or Frigga &#8212; goddesses of love, fertility, beauty, and fierce protection. Friday was a day of celebration and connection. It became &#8220;unlucky&#8221; as older traditions were suppressed and feminine power was demonized.</p>
+                        <p><em>The therapeutic mirror:</em> Where have you been told your softness is weakness? Where has your capacity for love, connection, or pleasure been pathologized or shamed?</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="concept-card" onclick="toggleConcept(this)">
+                <div class="concept-header">
+                    <span class="concept-num">3</span>
+                    <span class="concept-title">Black Cats Were Revered</span>
+                    <span class="concept-toggle">+</span>
+                </div>
+                <div class="concept-body">
+                    <div class="concept-content">
+                        <p>In ancient Egypt, black cats were considered sacred protectors. In Celtic traditions, a black cat arriving at your home was a sign of prosperity. It was the European witch trials that transformed them into omens of evil &#8212; guilt by association with women who healed and knew too much.</p>
+                        <p><em>The therapeutic mirror:</em> What knowledge, intuition, or way of being have you been taught to distrust in yourself? What &#8220;darkness&#8221; in you might actually be quiet wisdom?</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="concept-card" onclick="toggleConcept(this)">
+                <div class="concept-header">
+                    <span class="concept-num">4</span>
+                    <span class="concept-title">Walking Under Ladders &amp; Broken Mirrors</span>
+                    <span class="concept-toggle">+</span>
+                </div>
+                <div class="concept-body">
+                    <div class="concept-content">
+                        <p>The ladder against a wall forms a triangle &#8212; a shape sacred to many traditions. To walk through it was to disturb the divine. Mirrors were thought to hold pieces of the soul; to break one was to fragment yourself.</p>
+                        <p><em>The therapeutic mirror:</em> What sacred boundaries have you been taught to fear instead of honor? And where in your life are you afraid of being &#8220;broken&#8221; &#8212; when perhaps you&#8217;re just in the process of being <em>rearranged</em>?</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="concept-card" onclick="toggleConcept(this)">
+                <div class="concept-header">
+                    <span class="concept-num">5</span>
+                    <span class="concept-title">The Curse Is the Story &#8212; Not the Thing</span>
+                    <span class="concept-toggle">+</span>
+                </div>
+                <div class="concept-body">
+                    <div class="concept-content">
+                        <p>Narrative therapy teaches us that <em>the person is not the problem; the problem is the problem.</em> Superstitions work the same way &#8212; they attach fear to neutral or even beautiful things. The number, the cat, the mirror are not cursed. The <em>story</em> about them is.</p>
+                        <p>The same is true for us. You are not broken. You are not cursed. You are not &#8220;too much.&#8221; Someone wrote a story about you that wasn&#8217;t true. Today, you get to rewrite it.</p>
+                        <p><em>From IFS:</em> The parts of us that carry shame were often our most creative, passionate, sensitive selves &#8212; exiled to protect us from rejection. Reclamation means inviting those exiled parts back with honor.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========================
+         PAGE 2: STATIONS
+    ======================== -->
+    <div class="page" id="page-2">
+        <div class="card">
+            <h2><span class="glyph">&#9830;</span> Seven Stations of Reclamation</h2>
+            <p style="margin-bottom:0.5rem;">Choose any station that calls to you. Spend as long as you wish. There is no order, no requirement, no wrong way. You may always pass.</p>
+            <p style="color:var(--soft-lavender); font-style:italic; margin-bottom:1.5rem;">Tap a station to reveal its prompts.</p>
+
+            <div class="station-grid">
+
+                <!-- Station 1: Visual Arts -->
+                <div class="station-card" onclick="toggleStation(this)">
+                    <span class="station-symbol">&#9651;</span>
+                    <div class="station-name">Visual Arts</div>
+                    <div class="station-subtitle">The Alchemy of Image</div>
+                    <div class="station-prompts">
+                        <div class="prompt-item"><strong>Curse to Blessing Portrait:</strong> On one side of the paper, represent something you&#8217;ve been told is &#8220;wrong&#8221; with you. On the other side, represent the hidden strength inside that same quality.</div>
+                        <div class="prompt-item"><strong>Lucky 13 Talisman:</strong> Design your own good luck charm, sigil, or amulet. What symbols represent your reclaimed power?</div>
+                        <div class="prompt-item"><strong>The Rewritten Label:</strong> Take a word that has been used against you (broken, lazy, too sensitive, dramatic, selfish). Transform it visually into something beautiful. Illuminate it like a medieval manuscript.</div>
+                        <div class="prompt-item"><strong>Before &amp; After the Flip:</strong> Create a diptych &#8212; the &#8220;cursed&#8221; version of the story on the left, the reclaimed version on the right. Same material, different narrative.</div>
+                        <div class="prompt-item"><strong>Black Cat Portrait:</strong> Draw, paint, or collage the part of yourself that others fear or misunderstand. Give it dignity. Give it beauty.</div>
+                    </div>
+                </div>
+
+                <!-- Station 2: Movement/Dance -->
+                <div class="station-card" onclick="toggleStation(this)">
+                    <span class="station-symbol">&#8734;</span>
+                    <div class="station-name">Movement &amp; Dance</div>
+                    <div class="station-subtitle">The Body Remembers What Words Forget</div>
+                    <div class="station-prompts">
+                        <div class="prompt-item"><strong>The Shrink and the Expand:</strong> Begin by making yourself as small as the &#8220;curse&#8221; told you to be. Slowly, expand into the fullness that was always yours. Take up space.</div>
+                        <div class="prompt-item"><strong>Walk of Reclamation:</strong> Walk across the room as the &#8220;cursed&#8221; version of yourself &#8212; head down, shoulders in. Then walk back as the reclaimed version. Notice what shifts in your body.</div>
+                        <div class="prompt-item"><strong>Shake It Off:</strong> Literally. Shake your hands, arms, legs, whole body. Animals discharge stress through shaking. Let the old stories leave through movement.</div>
+                        <div class="prompt-item"><strong>The Lucky Dance:</strong> If your reclaimed self had a victory dance, a strut, a celebratory movement &#8212; what would it look like? Let your body find it.</div>
+                        <div class="prompt-item"><strong>Mirror, Mirror:</strong> With a partner or alone, move as if you are seeing yourself clearly for the first time &#8212; not through the distorted mirror of superstition, but through the clear mirror of self-recognition.</div>
+                    </div>
+                </div>
+
+                <!-- Station 3: Music/Sound -->
+                <div class="station-card" onclick="toggleStation(this)">
+                    <span class="station-symbol">&#9835;</span>
+                    <div class="station-name">Music &amp; Sound</div>
+                    <div class="station-subtitle">Vibration as Reclamation</div>
+                    <div class="station-prompts">
+                        <div class="prompt-item"><strong>The Unlucky Playlist vs. The Lucky Playlist:</strong> Choose a song that represents the old &#8220;cursed&#8221; story. Then choose one that represents the flip. What changes?</div>
+                        <div class="prompt-item"><strong>Sound of the Curse Breaking:</strong> Using voice, instruments, or body percussion, create the sound of a curse shattering. What does liberation sound like?</div>
+                        <div class="prompt-item"><strong>Reclamation Anthem:</strong> If your reclaimed self had a theme song, a rallying cry, a battle hymn &#8212; what would it be? Hum it, sing it, drum it out.</div>
+                        <div class="prompt-item"><strong>Thirteen Beats:</strong> Create a rhythm pattern with exactly thirteen beats. Let it be irregular, unexpected, your own. Thirteen doesn&#8217;t fit neatly into 4/4 time, and neither do you.</div>
+                        <div class="prompt-item"><strong>Whisper to Roar:</strong> Start with the quietest sound you can make &#8212; the hushed voice of the exiled part. Slowly build to full volume. Let yourself be heard.</div>
+                    </div>
+                </div>
+
+                <!-- Station 4: Writing -->
+                <div class="station-card" onclick="toggleStation(this)">
+                    <span class="station-symbol">&#8984;</span>
+                    <div class="station-name">Writing</div>
+                    <div class="station-subtitle">The Pen Rewrites the Curse</div>
+                    <div class="station-prompts">
+                        <div class="prompt-item"><strong>Letter to the Superstition:</strong> Write a letter to the belief, label, or story that cursed you. Tell it what it took from you. Then tell it what you&#8217;re taking back.</div>
+                        <div class="prompt-item"><strong>13 Things I Was Wrong About Myself:</strong> List thirteen things you believed about yourself that turned out to be someone else&#8217;s story, not yours.</div>
+                        <div class="prompt-item"><strong>The Counter-Spell:</strong> Write an incantation, poem, or declaration that reverses the curse. Begin with &#8220;I am not cursed. I am&#8230;&#8221;</div>
+                        <div class="prompt-item"><strong>Origin Story Rewrite:</strong> Choose a memory where you were shamed, rejected, or told you were too much. Rewrite it from the perspective of someone who sees your wholeness.</div>
+                        <div class="prompt-item"><strong>The Black Cat Speaks:</strong> Write from the perspective of a black cat who was sacred before it was feared. What would it say to the part of you that knows this feeling?</div>
+                    </div>
+                </div>
+
+                <!-- Station 5: Drama/Performance -->
+                <div class="station-card" onclick="toggleStation(this)">
+                    <span class="station-symbol">&#9671;</span>
+                    <div class="station-name">Drama &amp; Performance</div>
+                    <div class="station-subtitle">Embodying the Flip</div>
+                    <div class="station-prompts">
+                        <div class="prompt-item"><strong>The Trial of the Cursed:</strong> Put the &#8220;curse&#8221; on trial. You are the defense attorney for the part of you that was labeled bad, broken, or unlucky. Make your closing argument.</div>
+                        <div class="prompt-item"><strong>Before &amp; After Monologue:</strong> Perform a short monologue as the &#8220;cursed&#8221; version of yourself, then immediately perform one as the reclaimed version. Same person, different story.</div>
+                        <div class="prompt-item"><strong>The Coronation:</strong> Perform a ceremony where the exiled part of you is not just welcomed back &#8212; but crowned. What title does it receive? What honors?</div>
+                        <div class="prompt-item"><strong>Superstition Breaker:</strong> Physically and dramatically &#8220;break&#8221; a superstition. Walk under an imaginary ladder with triumph. Celebrate the number thirteen. Pet an imaginary black cat with reverence.</div>
+                        <div class="prompt-item"><strong>The Two Narrators:</strong> One voice tells the cursed version of your story. The other interrupts with the truth. Let them argue. See who wins.</div>
+                    </div>
+                </div>
+
+                <!-- Station 6: Fashion/Adornment -->
+                <div class="station-card" onclick="toggleStation(this)">
+                    <span class="station-symbol">&#10022;</span>
+                    <div class="station-name">Fashion &amp; Adornment</div>
+                    <div class="station-subtitle">Wearing Your Reclamation</div>
+                    <div class="station-prompts">
+                        <div class="prompt-item"><strong>The Crown of the Reclaimed:</strong> Create a crown, headpiece, or adornment from available materials. This is for the part of you that was told it didn&#8217;t belong. Now it rules.</div>
+                        <div class="prompt-item"><strong>Lucky Charm Creation:</strong> Fashion a physical talisman &#8212; a lucky charm that represents your reclaimed narrative. Something you could carry with you.</div>
+                        <div class="prompt-item"><strong>Armor vs. Adornment:</strong> Create something you would <em>wear</em> that represents the difference between protecting yourself from the curse and adorning yourself in your own power.</div>
+                        <div class="prompt-item"><strong>The Thirteenth Outfit:</strong> If you were dressing for a celebration of everything the world told you to hide &#8212; what would you wear? Style it. Describe it. Embody it.</div>
+                    </div>
+                </div>
+
+                <!-- Station 7: Open Intuitive -->
+                <div class="station-card" onclick="toggleStation(this)">
+                    <span class="station-symbol">&#8258;</span>
+                    <div class="station-name">Open Intuitive</div>
+                    <div class="station-subtitle">The Surprise Station</div>
+                    <div class="station-prompts">
+                        <div class="prompt-item"><strong>No Rules.</strong> Follow your impulse. Combine stations. Invent something new. If the muse is calling you somewhere unexpected &#8212; go there.</div>
+                        <div class="prompt-item"><strong>Cross-Pollinate:</strong> Take something you started at one station and finish it at another. Write a poem and then dance it. Draw your sound. Sing your painting.</div>
+                        <div class="prompt-item"><strong>The Thirteenth Thing:</strong> You have twelve prompts behind you. What is the thirteenth &#8212; the one nobody expected, the one that breaks the pattern? Let it find you.</div>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="pass-note">
+                You may always pass. You may sit quietly. You may watch. You may change stations at any time. Your nervous system knows what it needs.
+            </div>
+        </div>
+    </div>
+
+    <!-- ========================
+         PAGE 3: INTEGRATION
+    ======================== -->
+    <div class="page" id="page-3">
+        <div class="card">
+            <h2><span class="glyph">&#9788;</span> Integration &amp; Closing</h2>
+            <p style="margin-bottom:1.5rem;">Take a moment to gather what emerged. There are no right answers &#8212; only your answers.</p>
+
+            <div class="reflection-grid">
+                <div class="reflection-prompt">
+                    <label>What &#8220;curse&#8221; or label did you explore today?</label>
+                    <textarea placeholder="The story someone else wrote about you..." id="r1"></textarea>
+                </div>
+                <div class="reflection-prompt">
+                    <label>What hidden strength did you discover inside it?</label>
+                    <textarea placeholder="The power that was there all along..." id="r2"></textarea>
+                </div>
+                <div class="reflection-prompt">
+                    <label>What surprised you during the creative process?</label>
+                    <textarea placeholder="Something unexpected that emerged..." id="r3"></textarea>
+                </div>
+                <div class="reflection-prompt">
+                    <label>Where did you feel this in your body?</label>
+                    <textarea placeholder="Sensations, shifts, openings, tension..." id="r4"></textarea>
+                </div>
+                <div class="reflection-prompt">
+                    <label>If you could give yourself a &#8220;lucky&#8221; title, what would it be?</label>
+                    <textarea placeholder="The Reclaimed, The Thirteenth Guest, The One Who Returned..." id="r5"></textarea>
+                </div>
+                <div class="reflection-prompt">
+                    <label>What is one thing you are taking back from the old story this week?</label>
+                    <textarea placeholder="A small, concrete act of reclamation..." id="r6"></textarea>
+                </div>
+            </div>
+
+            <div class="btn-row">
+                <button class="btn btn-primary" onclick="saveReflections()">Save Reflections</button>
+                <button class="btn btn-ghost" onclick="clearReflections()">Clear</button>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2><span class="glyph">&#10038;</span> Closing Words</h2>
+
+            <div class="quote-block">
+                <p class="quote-text">
+                    Perhaps all the dragons in our lives are princesses who are only waiting to see us act, just once, with beauty and courage. Perhaps everything that frightens us is, in its deepest essence, something helpless that wants our love.
+                </p>
+                <p class="quote-attr">&#8212; Rainer Maria Rilke</p>
+            </div>
+
+            <div style="text-align:center; margin-top:1.5rem;">
+                <p style="color:var(--gold-light); font-family:'Cinzel',serif; font-size:0.9rem; letter-spacing:0.1em;">13 IS YOUR NUMBER NOW.</p>
+                <div class="divider"></div>
+                <p style="font-style:italic; color:var(--soft-lavender);">Thank you for your courage today. What was cast out has been welcomed home.</p>
+            </div>
+        </div>
+
+        <!-- Crisis Footer -->
+        <div class="crisis-footer">
+            <p>If today&#8217;s exploration brought up difficult feelings, please reach out to your therapist or a trusted support person.</p>
+            <p style="margin-top:0.5rem;">Crisis Text Line: Text HOME to <strong>741741</strong> &nbsp;|&nbsp; 988 Suicide &amp; Crisis Lifeline: Call or text <strong>988</strong></p>
+        </div>
+    </div>
+
+</div>
+
+<script>
+    // ============================
+    // STARFIELD GENERATOR
+    // ============================
+    (function generateStars() {
+        const field = document.getElementById('starfield');
+        const count = 80;
+        for (let i = 0; i < count; i++) {
+            const s = document.createElement('div');
+            s.className = 'star';
+            s.style.left = Math.random() * 100 + '%';
+            s.style.top = Math.random() * 100 + '%';
+            s.style.setProperty('--dur', (3 + Math.random() * 6) + 's');
+            s.style.setProperty('--peak', (0.3 + Math.random() * 0.7));
+            s.style.animationDelay = -(Math.random() * 8) + 's';
+            s.style.width = s.style.height = (1 + Math.random() * 2) + 'px';
+            field.appendChild(s);
+        }
+    })();
+
+    // ============================
+    // PAGE NAVIGATION
+    // ============================
+    function showPage(index) {
+        document.querySelectorAll('.page').forEach((p, i) => {
+            p.classList.toggle('active', i === index);
+        });
+        document.querySelectorAll('.nav-btn').forEach((b, i) => {
+            b.classList.toggle('active', i === index);
+        });
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    // ============================
+    // BREATHING CIRCLE
+    // ============================
+    let breathActive = false;
+    let breathInterval = null;
+    const breathPhases = ['Breathe In...', 'Hold...', 'Breathe Out...', 'Rest...'];
+
+    function toggleBreathing() {
+        const circle = document.getElementById('breathCircle');
+        const text = document.getElementById('breathText');
+        const instruction = document.getElementById('breathInstruction');
+
+        if (breathActive) {
+            breathActive = false;
+            circle.classList.remove('active');
+            clearInterval(breathInterval);
+            text.textContent = 'BEGIN';
+            instruction.textContent = 'Tap the circle to begin a grounding breath';
+            return;
+        }
+
+        breathActive = true;
+        circle.classList.add('active');
+        instruction.textContent = 'Tap again to stop';
+        let phase = 0;
+
+        function nextPhase() {
+            text.textContent = breathPhases[phase % 4];
+            phase++;
+        }
+
+        nextPhase();
+        breathInterval = setInterval(nextPhase, 2000);
+    }
+
+    // ============================
+    // MEDITATION TOGGLE
+    // ============================
+    function toggleMeditation() {
+        const script = document.getElementById('meditationScript');
+        script.classList.toggle('show');
+    }
+
+    // ============================
+    // CONCEPT CARDS (PSYCHOED)
+    // ============================
+    function toggleConcept(card) {
+        const wasOpen = card.classList.contains('open');
+        // Close all first
+        document.querySelectorAll('.concept-card').forEach(c => c.classList.remove('open'));
+        if (!wasOpen) card.classList.add('open');
+    }
+
+    // ============================
+    // STATION CARDS
+    // ============================
+    function toggleStation(card) {
+        const wasExpanded = card.classList.contains('expanded');
+        document.querySelectorAll('.station-card').forEach(c => c.classList.remove('expanded'));
+        if (!wasExpanded) {
+            card.classList.add('expanded');
+            setTimeout(() => card.scrollIntoView({ behavior: 'smooth', block: 'nearest' }), 100);
+        }
+    }
+
+    // ============================
+    // SAVE / CLEAR REFLECTIONS
+    // ============================
+    function saveReflections() {
+        const data = {};
+        for (let i = 1; i <= 6; i++) {
+            data['r' + i] = document.getElementById('r' + i).value;
+        }
+        try {
+            localStorage.setItem('lucky13Reflections', JSON.stringify(data));
+            alert('Reflections saved.');
+        } catch (e) {
+            alert('Could not save. Your browser may not support local storage.');
+        }
+    }
+
+    function clearReflections() {
+        if (confirm('Clear all reflections? This cannot be undone.')) {
+            for (let i = 1; i <= 6; i++) {
+                document.getElementById('r' + i).value = '';
+            }
+            localStorage.removeItem('lucky13Reflections');
+        }
+    }
+
+    // Load saved reflections on page load
+    window.addEventListener('load', () => {
+        try {
+            const saved = JSON.parse(localStorage.getItem('lucky13Reflections'));
+            if (saved) {
+                for (let i = 1; i <= 6; i++) {
+                    if (saved['r' + i]) document.getElementById('r' + i).value = saved['r' + i];
+                }
+            }
+        } catch (e) {}
+
+        // Stagger station card animations
+        document.querySelectorAll('.station-card').forEach((card, i) => {
+            card.style.animation = `pageIn 0.5s ease ${i * 0.08}s both`;
+        });
+    });
+</script>
+
+</body>
+</html>
